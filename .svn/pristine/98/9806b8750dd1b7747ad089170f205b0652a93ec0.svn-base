@@ -1,0 +1,40 @@
+package test.testrequest;
+
+import static org.junit.Assert.*;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import server.Server;
+import test.tools.ClientUtil;
+
+public class TestRequest {
+	
+	private ClientUtil client;
+	private Server server;
+
+	@BeforeClass
+	public void setUpBeforeClass() throws Exception {
+		this.server = new Server(4269);
+		this.server.startServer();
+	}
+
+	@Before
+	public void setUp() throws Exception {
+		this.client = new ClientUtil(4269);
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		this.client.closeAll();
+	}
+	
+	@AfterClass
+	public void tearDownAfterClass() throws Exception {
+		this.server.stop();
+	}
+
+}

@@ -1,0 +1,69 @@
+package server;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+/**
+ * @author franquenouille
+ *
+ */
+public class Server {
+	
+	private boolean status = false;
+	private ServerSocket ss;
+	private Socket socket;
+	
+    /**
+     * 
+     * @param port
+     * @throws IOException
+     */
+	public Server(int port) throws IOException{
+		this.ss = new ServerSocket(port);
+		this.status = true;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public ServerSocket getServer() {
+		return ss;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	boolean isStarted(){
+		return this.status;
+	}
+
+	/**
+	 * 
+	 */
+	void startServer(){
+		while (true){
+			try {
+				this.socket = this.getServer().accept();
+				new Thread(new FtpClient(socket)).start();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void main(String[] args) {
+		try {
+			System.out.println("The server is started on 127.0.0.1:3377");
+			Server serv = new Server(3377);
+			serv.startServer();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+}

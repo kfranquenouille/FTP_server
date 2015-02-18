@@ -1,0 +1,36 @@
+package server;
+/**
+ * 
+ */
+
+/**
+ * @author franquenouille
+ *
+ */
+public class FtpRequest {
+ 
+	void processUSER(final String name){
+		
+	}
+	
+	void processPASS(final String pass){
+		
+	}
+	
+	void processRETR(final String file){
+		
+	}
+	
+	void processSTOR(final String file){
+		
+	}
+	
+	void processLIST(){
+		
+	}
+	
+	void processQUIT(){
+		
+	}
+
+}

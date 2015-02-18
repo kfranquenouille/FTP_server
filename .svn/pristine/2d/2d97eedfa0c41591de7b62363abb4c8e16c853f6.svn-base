@@ -1,0 +1,83 @@
+package request;
+
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+
+import server.FtpClient;
+import exception.RequestException;
+
+public class RequestSTOR implements Request {
+	
+	/**
+	 * Singleton 
+	 */
+	private RequestSTOR(){}
+	
+	private static RequestSTOR INSTANCE = new RequestSTOR();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static RequestSTOR getInstance(){
+		return INSTANCE;
+	}
+
+	@Override
+	public void executeRequest(String[] requete, FtpClient ftp) throws RequestException {
+		if (!requete[0].equals("STOR")){
+			this.nextRequest(requete, ftp);
+			return;
+		}
+		if (!ftp.getClient().isRead()){
+			ftp.getWriter().println("550 Requested action not taken. File unavailable (e.g., file not found, no access).");
+			throw new RequestException(ftp);
+		} else {
+			String nameCurrentFile=requete[1];
+			ftp.getWriter().println("150 Opening ASCII mode data connection for "+nameCurrentFile);
+			
+			
+			if (ftp.isPassive()){
+				System.out.println("on veut le mode passif");
+			} else {
+				try {
+					ftp.setDataSocket(new Socket(InetAddress.getByName(ftp.getAddress()), ftp.getPort()));
+					
+					ftp.setDataReader(new DataInputStream(ftp.getDataSocket().getInputStream()));
+					
+					FileOutputStream file = new FileOutputStream(ftp.getRoot()+nameCurrentFile);
+					
+					int character;
+					while ((character=ftp.getDataReader().read()) != -1){
+						file.write(character);	
+					}
+					
+					file.close();
+					ftp.getDataSocket().close();
+					System.out.println(ftp.getClient().getUsername()+" puts the file "+nameCurrentFile);
+					ftp.getWriter().println("226 Transfer complete.");
+				} catch(IOException e){
+					ftp.getWriter().println("425 Can't open data connection.");
+					e.printStackTrace();
+				}
+			}
+		}
+					
+	}
+
+	@Override
+	public void nextRequest(String[] requete, FtpClient ftp) {
+		try {
+			RequestUnknown.getInstance().executeRequest(requete, ftp);
+		} catch (RequestException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	
+}

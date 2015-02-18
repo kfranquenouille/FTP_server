@@ -1,0 +1,17 @@
+package exception;
+
+import server.FtpClient;
+
+public class RequestException extends Exception {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3796494876819647990L;
+	
+	public RequestException(final FtpClient ftp){
+		ftp.getWriter().println("530 Bad username");
+	}
+	
+
+}

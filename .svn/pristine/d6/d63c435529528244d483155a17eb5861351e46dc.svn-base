@@ -1,0 +1,48 @@
+package test.testserver;
+
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
+
+import exception.ServerAlreadyStartedException;
+
+import server.Server;
+
+public class ServerTest {
+
+	@Before
+	public void setUp() throws Exception {
+	}
+
+	@Test
+	public void testServerBienDemarre() {
+		final Server serv;
+		try {
+			serv = new Server(3377);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						serv.startServer();					
+					} catch (ServerAlreadyStartedException e) {
+						fail("Le server est déja démarré !");
+					}
+				}					
+			}).start();
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				fail("Le server a rencontré un problème de thread");
+			}
+			assertTrue(serv.isStarted());
+		} catch (IOException e) {
+			fail("Le server a rencontré un problème");
+		}
+	}
+}

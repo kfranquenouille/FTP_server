@@ -1,0 +1,105 @@
+package server;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+
+/**
+ * @author franquenouille
+ *
+ */
+public class Server {
+	
+	/*private boolean status;
+	private ServerSocket server;
+	private ExecutorService executor;
+	private int port;*/
+	
+	private ServerSocket ss;
+    private Socket socket;
+    private OutputStream os;
+    private BufferedReader buffer;
+	
+	public Server(int port) throws IOException{
+		this.ss = new ServerSocket(port);
+        this.socket = ss.accept();
+        this.os = socket.getOutputStream();
+        this.buffer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	}
+	
+	
+	/*boolean isStarted(){
+		return this.status;
+	}*/
+	
+	
+	public OutputStream getOs() {
+		return os;
+	}
+
+
+	void startServer(){
+		/*System.out.println("test");
+		if (isStarted()){
+			System.out.println("erreur le serveur est deja demarré");
+			return;
+		}
+		try {
+			server = new ServerSocket(port);
+			this.status = true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		while (true){
+			try {
+				Socket client = server.accept();
+				System.out.println("hello");
+				executor.execute(new FtpClientSocket(client));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}*/
+		
+
+		
+
+		
+	}
+
+	/**
+	 * @param args
+	 */
+	/*public static void main(String[] args) {
+		Server test;
+		try {
+			test = new Server(2121);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//test.startServer();
+
+	}*/
+	
+	public static void main(String[] args) {
+		try {
+			Server serv = new Server(3377);
+			serv.getOs().write("Bienvenue, vous êtes le client\n".getBytes());
+			do{
+				
+			}while(true);
+			
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+}

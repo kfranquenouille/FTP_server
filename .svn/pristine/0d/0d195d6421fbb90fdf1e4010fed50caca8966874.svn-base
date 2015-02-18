@@ -1,0 +1,48 @@
+package request;
+
+import server.FtpClient;
+import exception.RequestException;
+
+public class RequestUSER implements Request {
+	
+	/**
+	 * Singleton 
+	 */
+	private RequestUSER(){}
+	
+	private static RequestUSER INSTANCE = new RequestUSER();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static RequestUSER getInstance(){
+		return INSTANCE;
+	}
+
+	@Override
+	public void executeRequest(String[] requete, FtpClient ftp) throws RequestException {
+		if (!requete[0].equals("USER")){
+			this.nextRequest(requete, ftp);
+			return;
+		}
+		if (ftp.containsUserNamed(requete[1])){
+			ftp.setClient(ftp.getUserNamed(requete[1]));
+			ftp.getWriter().println("331 login OK, Password required");
+		} else {
+			throw new RequestException(ftp);
+		}
+	}
+
+	@Override
+	public void nextRequest(String[] requete, FtpClient ftp) {
+		try {
+			RequestPASS.getInstance().executeRequest(requete, ftp);
+		} catch (RequestException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	
+}

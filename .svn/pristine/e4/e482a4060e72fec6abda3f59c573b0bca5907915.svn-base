@@ -1,0 +1,79 @@
+package server;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import exception.ServerAlreadyStartedException;
+
+/**
+ * @author franquenouille
+ *
+ */
+public class Server {
+	
+	private boolean status = false;
+	private ServerSocket ss;
+	private Socket socket;
+	
+    /**
+     * 
+     * @param port
+     * @throws IOException
+     */
+	public Server(int port) throws IOException{
+		this.ss = new ServerSocket(port);
+	}
+	
+	/**
+	 * getter de la socket du serveur
+	 * @return
+	 */
+	public ServerSocket getServer() {
+		return ss;
+	}
+	
+	/**
+	 * Affiche l'etat du serveur
+	 * @return
+	 */
+	public boolean isStarted(){
+		return this.status;
+	}
+
+	/**
+	 * Permet de demarrer le serveur FTP
+	 */
+	public void startServer() throws ServerAlreadyStartedException {
+		if(!this.isStarted()) {
+			this.status = true;
+			while (true){
+				try {
+					this.socket = this.getServer().accept();
+					new Thread(new FtpClient(socket)).start();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}	
+		} else {
+			throw new ServerAlreadyStartedException();
+		}
+	}
+
+	public static void main(String[] args) {
+		try {
+			Server serv = new Server(3377);
+			try {
+				serv.startServer();
+				System.out.println("The server is started on 127.0.0.1:3377");
+			} catch (ServerAlreadyStartedException e) {
+				System.out.println("Error : The server is already started");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+}

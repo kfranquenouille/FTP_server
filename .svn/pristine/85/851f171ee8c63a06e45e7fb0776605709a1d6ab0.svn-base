@@ -1,0 +1,47 @@
+package request;
+
+import java.io.IOException;
+
+import server.FtpClient;
+import exception.RequestException;
+
+public class RequestQUIT implements Request {
+	
+	/**
+	 * Singleton 
+	 */
+	private RequestQUIT(){}
+	
+	private static RequestQUIT INSTANCE = new RequestQUIT();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static RequestQUIT getInstance(){
+		return INSTANCE;
+	}
+
+	@Override
+	public void executeRequest(String[] requete, FtpClient ftp) throws RequestException {
+		if (!requete[0].equals("QUIT")){
+			this.nextRequest(requete, ftp);
+			return;
+		} else {
+			try {
+				ftp.closeClient();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}		
+		}
+	}
+
+	@Override
+	public void nextRequest(String[] requete, FtpClient ftp) {
+		try {
+			RequestCWD.getInstance().executeRequest(requete, ftp);
+		} catch (RequestException e) {
+			e.printStackTrace();
+		}
+	}
+}

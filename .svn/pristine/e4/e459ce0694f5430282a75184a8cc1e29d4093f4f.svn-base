@@ -1,0 +1,127 @@
+package server;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+/**
+ * @author franquenouille
+ *
+ */
+public class Server {
+	
+	/*private ServerSocket server;
+	private ExecutorService executor;
+	private int port;*/
+	
+	private boolean status = false;
+	private ServerSocket ss;
+	private Socket socket;
+    private OutputStream os;
+    private BufferedReader buffer;
+	
+    /**
+     * 
+     * @param port
+     * @throws IOException
+     */
+	public Server(int port) throws IOException{
+		this.ss = new ServerSocket(port);
+		this.status = true;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public ServerSocket getServer() {
+		return ss;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	boolean isStarted(){
+		return this.status;
+	}
+	
+	
+	public OutputStream getOs() {
+		return os;
+	}
+
+
+	void startServer(){
+		/*System.out.println("test");
+		if (isStarted()){
+			System.out.println("erreur le serveur est deja demarré");
+			return;
+		}
+		try {
+			server = new ServerSocket(port);
+			this.status = true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		while (true){
+			try {
+				Socket client = server.accept();
+				System.out.println("hello");
+				executor.execute(new FtpClientSocket(client));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}*/
+
+
+		
+		while (true){
+			try {
+				this.socket = this.getServer().accept();
+//				this.os = socket.getOutputStream();
+//				this.buffer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//				this.getOs().write("220 Connection etablished\n".getBytes());
+				new Thread(new FtpClient(socket)).start();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * @param args
+	 */
+	/*public static void main(String[] args) {
+		Server test;
+		try {try {
+			this.socket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			test = new Server(2121);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//test.startServer();
+
+	}*/
+	
+	public static void main(String[] args) {
+		try {
+			Server serv = new Server(3377);
+			serv.startServer();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+}

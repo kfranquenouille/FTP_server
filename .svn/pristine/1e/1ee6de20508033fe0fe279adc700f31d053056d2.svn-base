@@ -1,0 +1,34 @@
+package request;
+
+import server.FtpClient;
+import exception.RequestException;
+
+public class RequestUnknown implements Request {
+	
+	/**
+	 * Singleton 
+	 */
+	private RequestUnknown(){}
+	
+	private static RequestUnknown INSTANCE = new RequestUnknown();
+	
+	/**
+	 * Créer une instance de la requete inconnue
+	 * @return 
+	 */
+	public static RequestUnknown getInstance(){
+		return INSTANCE;
+	}
+
+	@Override
+	public void executeRequest(String[] requete, FtpClient ftp) throws RequestException {
+		ftp.getWriter().println("202 command not implemented");
+	}
+
+	@Override
+	public void nextRequest(String[] requete, FtpClient ftp) {
+	}
+
+	
+	
+}

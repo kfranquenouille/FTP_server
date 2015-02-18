@@ -1,0 +1,14 @@
+TP1 CAR
+
+Authors :
+	Kevin FRANQUENOUILLE
+	Damien CORNETTE
+	
+	
+How to start the FTP server :
+	java -jar FTPserver.jar
+	
+	
+Tests :
+ - you need to create a folder using root named "locked" in the directory /tmp/ (in order to not remove some system files)
+ - create a file named "test" with an user account in the directory /tmp/

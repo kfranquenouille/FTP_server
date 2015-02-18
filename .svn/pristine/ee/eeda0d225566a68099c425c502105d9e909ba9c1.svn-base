@@ -1,0 +1,43 @@
+package request;
+
+import server.FtpClient;
+import exception.RequestException;
+
+public class RequestPASS implements Request {
+
+	/**
+	 * Singleton 
+	 */
+	private RequestPASS(){}
+	
+	private static RequestPASS INSTANCE = new RequestPASS();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static RequestPASS getInstance(){
+		return INSTANCE;
+	}
+
+	@Override
+	public void executeRequest(String[] requete, FtpClient ftp) throws RequestException {
+		if (!requete[0].equals("PASS")){
+			System.out.println("NOT PASS REQUEST");
+			this.nextRequest(requete, ftp);
+			return;
+		}
+		if (requete[1].contains(ftp.getPassword())){
+			ftp.getWriter().println("230 User "+ftp.getUsername()+" logged in");
+		} else {
+			throw new RequestException(ftp);
+		}
+	}
+
+	@Override
+	public void nextRequest(String[] requete, FtpClient ftp) {
+		System.out.println("le MDP le gueux !");
+		//RequestPASS.getInstance().nextRequest(requete, ftp);
+	}
+
+}

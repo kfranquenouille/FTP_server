@@ -1,0 +1,89 @@
+package request;
+
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+
+import server.FtpClient;
+import exception.RequestException;
+
+public class RequestRETR implements Request {
+	
+	/**
+	 * Singleton 
+	 */
+	private RequestRETR(){}
+	
+	private static RequestRETR INSTANCE = new RequestRETR();
+	
+	/**
+	 * Créer une instance de la requete RETR
+	 * @return 
+	 */
+	public static RequestRETR getInstance(){
+		return INSTANCE;
+	}
+
+	@Override
+	public void executeRequest(String[] requete, FtpClient ftp) throws RequestException {
+		if (!requete[0].equals("RETR")){
+			this.nextRequest(requete, ftp);
+			return;
+		}
+		/* Vérification des droits de lecture */
+		if (!ftp.getClient().isRead()){
+			ftp.getWriter().println("550 Requested action not taken. File unavailable (e.g., file not found, no access).");
+			throw new RequestException(ftp);
+		} else {
+			String nameCurrentFile=requete[1];
+			ftp.getWriter().println("150 Opening ASCII mode data connection for "+nameCurrentFile);
+			
+			/* Si le mode Passif est activé */
+			if (ftp.isPassive()){
+				System.out.println("on veut le mode passif");
+			} else {
+				try {
+					/* socket utilisée pour les données */
+					ftp.setDataSocket(new Socket(InetAddress.getByName(ftp.getAddress()), ftp.getPort()));
+					/* mise en place d'un writer pour une copie locale, on place le fichier a copier en out*/
+					ftp.setDataWriter(new DataOutputStream(ftp.getDataSocket().getOutputStream()));
+					/* On crée le fichier distant (celui sur le serveur) */
+					FileInputStream file = new FileInputStream(ftp.getRoot()+nameCurrentFile);
+					/* copie du fichier */
+					int character;
+					while ((character=file.read()) != -1){
+						ftp.getDataWriter().write(character);
+					}
+					
+					/* On ferme le tout */
+					file.close();
+					ftp.getDataSocket().close();
+					
+					/* affichage pour le serveur */
+					System.out.println(ftp.getClient().getUsername()+" gets the file "+nameCurrentFile);
+					
+					
+					ftp.getWriter().println("226 Transfer complete.");
+				} catch(IOException e){
+					ftp.getWriter().println("425 Can't open data connection.");
+					e.printStackTrace();
+				}
+			}
+		}
+					
+	}
+
+	@Override
+	public void nextRequest(String[] requete, FtpClient ftp) {
+		try {
+			RequestSTOR.getInstance().executeRequest(requete, ftp);
+		} catch (RequestException e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	
+}

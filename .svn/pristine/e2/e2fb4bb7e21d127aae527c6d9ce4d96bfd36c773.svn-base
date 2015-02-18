@@ -1,0 +1,18 @@
+package test.testrequest;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+public class TestPASS extends TestRequest {
+
+	@Test
+	public void testGoodPass() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testBadPass() {
+		fail("Not yet implemented");
+	}
+}
